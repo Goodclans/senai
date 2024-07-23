@@ -17,7 +17,9 @@
 <body>
 
 <?php
-  $erro = false;
+  include_once './classes/Tabela.php';
+  
+  $erro     = false;
   $mensagem = null;
   
   if($_SERVER["REQUEST_METHOD"] == "POST") { 
@@ -32,9 +34,26 @@
    }elseif($_POST['senha'] != $_POST['confirmarSenha']){
     $erro = true;
     $mensagem = 'Senha são diferentes';
-   }
 
+   }else{
+      $condicao = 'usuario = "'.$_POST['usuario'].'"';
+      $obTabela = new tabela('usuario');
+      $retorno = $obTabela->select($condicao)->fetchObject();
+
+      if(!is_object($retorno)){
+        $dadosUsuario = ['nome'=>$_POST['nome'], 'usuario'=>$_POST
+        ['usuario'], 'senha'=>$_POST['senha']];
+
+        $obTabela->insert($dadosUsuario);
+
+        $cadastro = true;
+
+    }else{
+      $erro = true;
+      $mensagem = 'Usuario já cadastrado!';
+    }
   }
+}
 ?>
 
   <section class="pagina-login">
